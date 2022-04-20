@@ -6,12 +6,17 @@ object juego{
 
 	method configurar(){
 		game.width(12)
+		game.height(8)
+		game.title("Dino Game")
 		game.addVisual(suelo)
 		game.addVisual(cactus)
 		game.addVisual(dino)
 		game.addVisual(reloj)
+	
 		keyboard.space().onPressDo{ self.jugar()}
-		game.onCollideDo(dino,{ obstaculo => self.terminar()})
+		
+		game.onCollideDo(dino,{ obstaculo => obstaculo.chocar()})
+		
 	}
 	
 	method iniciar(){
@@ -21,19 +26,20 @@ object juego{
 	}
 	
 	method jugar(){
-		if (dino.activo())
+		if (dino.estaVivo()) 
 			dino.saltar()
 		else {
 			game.removeVisual(gameOver)
 			self.iniciar()
 		}
+		
 	}
 	
 	method terminar(){
-		game.removeTickEvent("moverCactus")
-		game.removeTickEvent("tiempo")
 		game.addVisual(gameOver)
-		dino.detener()
+		cactus.detener()
+		reloj.detener()
+		dino.morir()
 	}
 	
 }
@@ -59,11 +65,14 @@ object reloj {
 		tiempo = 0
 		game.onTick(100,"tiempo",{self.pasarTiempo()})
 	}
+	method detener(){
+		game.removeTickEvent("tiempo")
+	}
 }
 
 object cactus {
 	 
-	const posicionInicial = game.at(game.width()-1,1)
+	const posicionInicial = game.at(game.width()-1,suelo.position().y())
 	var position = posicionInicial
 
 	method image() = "cactus.png"
@@ -79,46 +88,52 @@ object cactus {
 		if (position.x() == -1)
 			position = posicionInicial
 	}
-
+	
+	method chocar(){
+		juego.terminar()
+	}
+    method detener(){
+		game.removeTickEvent("moverCactus")
+	}
 }
 
 object suelo{
 	
 	method position() = game.origin().up(1)
+	
 	method image() = "suelo.png"
 }
 
 
 object dino {
-	var activo = true
-	var position = game.at(1,1)
+	var vivo = true
+	var position = game.at(1,suelo.position().y())
 	
 	method image() = "dino.png"
 	method position() = position
 	
-	method position(nueva){
-		position = nueva
-	}
-	
-	method iniciar(){
-		activo = true
-	}
 	method saltar(){
-		if(position.y() == 1) {
+		if(position.y() == suelo.position().y()) {
 			self.subir()
 			game.schedule(velocidad*3,{self.bajar()})
 		}
-		
 	}
 	
 	method subir(){
 		position = position.up(1)
 	}
+	
 	method bajar(){
 		position = position.down(1)
 	}
-	method detener(){
-		activo = false
+	method morir(){
+		game.say(self,"¡Auch!")
+		vivo = false
 	}
-	method activo() = activo
+	method iniciar() {
+		vivo = true
+	}
+	method estaVivo() {
+		return vivo
+	}
 }
