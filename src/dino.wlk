@@ -1,5 +1,5 @@
 import wollok.game.*
-
+    
 const velocidad = 250
 
 object juego{
@@ -17,9 +17,9 @@ object juego{
 		
 		game.onCollideDo(dino,{ obstaculo => obstaculo.chocar()})
 		
-	}
+	} 
 	
-	method iniciar(){
+	method    iniciar(){
 		dino.iniciar()
 		reloj.iniciar()
 		cactus.iniciar()
