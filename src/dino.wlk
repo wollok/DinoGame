@@ -19,7 +19,7 @@ object juego{
 		
 	} 
 	
-	method    iniciar(){
+	method iniciar(){
 		dino.iniciar()
 		reloj.iniciar()
 		cactus.iniciar()
@@ -72,21 +72,22 @@ object reloj {
 
 object cactus {
 	 
-	const posicionInicial = game.at(game.width()-1,suelo.position().y())
-	var position = posicionInicial
+	var position = self.posicionInicial()
 
 	method image() = "cactus.png"
 	method position() = position
 	
+	method posicionInicial() = game.at(game.width()-1,suelo.position().y())
+
 	method iniciar(){
-		position = posicionInicial
+		position = self.posicionInicial()
 		game.onTick(velocidad,"moverCactus",{self.mover()})
 	}
 	
 	method mover(){
 		position = position.left(1)
 		if (position.x() == -1)
-			position = posicionInicial
+			position = self.posicionInicial()
 	}
 	
 	method chocar(){
@@ -107,6 +108,7 @@ object suelo{
 
 object dino {
 	var vivo = true
+
 	var position = game.at(1,suelo.position().y())
 	
 	method image() = "dino.png"

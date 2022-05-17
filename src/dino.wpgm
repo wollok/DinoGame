@@ -1,7 +1,7 @@
 import wollok.game.*
 import dino.* 
 
-program dino {
+program dinosaurio {
 
 	juego.configurar()
 	juego.iniciar()
